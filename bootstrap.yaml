@@ -1,0 +1,25 @@
+jobType: '<new-machine> | <partial-install>'
+deviceMetadata:
+  arch-flags: '<arm64> | <x86_64> | <uname -m>' # https://gitlab.kitware.com/cmake/cmake/-/issues/20989
+  canonical-arch-name: '<Apple Silicon> | <Intel> | <Arm>'
+platform:
+  - mac:
+    package-managers:
+      - homebrew:
+        install-commands: 
+          - '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+        after-install-commands:
+          - 'echo "export PATH=/opt/homebrew/bin:$PATH" >> $HOME/.zshrc'
+          - 'source $HOME/.zshrc'
+  - windows:
+    package-managers:
+      - chocolatey:
+        install-commands:
+          - 'Set-ExecutionPolicy AllSigned' # Admin PowerShell
+          - 'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))'
+      - scoop:
+        install-commands:
+          - 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser' # Admin PowerShell
+          - 'irm get.scoop.sh | iex'
+  - linux:
+    package-managers:

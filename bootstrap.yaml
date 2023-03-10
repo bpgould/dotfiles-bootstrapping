@@ -1,16 +1,28 @@
 jobType: '<new-machine> | <partial-install>'
 deviceMetadata:
+  platform: '<Mac> | <Windows> | <Linux>'
   arch-flags: '<arm64> | <x86_64> | <uname -m>' # https://gitlab.kitware.com/cmake/cmake/-/issues/20989
   canonical-arch-name: '<Apple Silicon> | <Intel> | <Arm>'
-platform:
+install:
   - mac:
+    general:
+      - workspace:
+        install-commands:
+          - 'mkdir "$HOME"/Documents/WORKSPACE'
     package-managers:
       - homebrew:
         install-commands: 
           - '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
         after-install-commands:
           - 'echo "export PATH=/opt/homebrew/bin:$PATH" >> $HOME/.zshrc'
-          - 'source $HOME/.zshrc'
+          - 'source "$HOME"/.zshrc'
+        dependencies:
+          - terraform:
+            install-commands:
+              - 'brew install tfenv'
+          - jq:
+            install-commands:
+              - 'brew install jq'
   - windows:
     package-managers:
       - chocolatey:

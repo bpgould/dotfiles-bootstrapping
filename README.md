@@ -19,3 +19,5 @@
 - aws cli, amplify cli, sam cli
 - ssh hosts, aws profiles
 - terraform tfenv
+
+https://gitlab.kitware.com/cmake/cmake/-/issues/20989

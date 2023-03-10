@@ -1,36 +1,65 @@
 jobType: '<new-machine> | <partial-install>'
 deviceMetadata:
-  platform: '<Mac> | <Windows> | <Linux>'
-  arch-flags: '<arm64> | <x86_64> | <uname -m>' # https://gitlab.kitware.com/cmake/cmake/-/issues/20989
-  canonical-arch-name: '<Apple Silicon> | <Intel> | <Arm>'
+  platform:
+    - Mac
+      canonical-arch-name:
+        - Apple Silicon
+          brew-install-path: /opt/homebrew/bin/
+          arch-flags: arm64
+        - x86
+          brew-install-path: /usr/local/bin
+          arch-flags: x86_64
+    - Windows
+      canonical-arch-name:
+        - x86
+          arch-flags: x86_64
+    - Unix
+      canonical-arch-name:
+        - x86
+          brew-install-path: /usr/local/bin
+          arch-flags: x86_64
+        - Arm
+          arch-flags: uname -m
+
 install:
   - mac:
     general:
       - workspace:
-        install-commands:
+        commands:
           - 'mkdir "$HOME"/Documents/WORKSPACE'
+      - git:
+        commands:
+          - 'git config --global user.email "<git-user-email>"'
+          - 'git config --global user.name "<git-user-name>"'
     package-managers:
       - homebrew:
-        install-commands: 
+        commands: 
           - '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-        after-install-commands:
+        after-commands:
           - 'echo "export PATH=/opt/homebrew/bin:$PATH" >> $HOME/.zshrc'
+            condition: canonical-arch-name=apple-silicon
           - 'source "$HOME"/.zshrc'
         dependencies:
           - terraform:
-            install-commands:
+            commands:
               - 'brew install tfenv'
           - jq:
-            install-commands:
+            commands:
               - 'brew install jq'
+          - bash:
+            commands:
+              - 'brew install bash'
+              - 'eval /opt/homebrew/bin/bash'
+                condition: canonical-arch-name=apple-silicon
+                next: 'exit'
   - windows:
     package-managers:
       - chocolatey:
-        install-commands:
+        commands:
           - 'Set-ExecutionPolicy AllSigned' # Admin PowerShell
           - 'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))'
       - scoop:
-        install-commands:
+        commands:
           - 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser' # Admin PowerShell
           - 'irm get.scoop.sh | iex'
   - linux:

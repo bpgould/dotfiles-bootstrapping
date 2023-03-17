@@ -62,5 +62,9 @@ install:
         commands:
           - 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser' # Admin PowerShell
           - 'irm get.scoop.sh | iex'
+        dependencies:
+          - bat:
+            commands:
+              - 'scoop install bat'
   - linux:
     package-managers:
